@@ -13,7 +13,16 @@
   
   "embedding_provider": "ollama",
   "embedding_config": {
-    "model": "bge-m3"
+    "model": "bge-m3",
+    "embedding_dims": 1024
+  },
+  
+  "graph_store_provider": "falkordb",
+  "graph_store_config": {
+    "host": "localhost",
+    "port": 6379,
+    "graph_name": "mem0_knowledge_graph",
+    "decode_responses": true
   },
   
   "log_level": "INFO",
