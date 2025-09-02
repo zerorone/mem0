@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  # Chroma 向量数据库
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: mem0-chromadb
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./chroma_data:/chroma/chroma
+    environment:
+      - CHROMA_SERVER_HOST=0.0.0.0
+      - CHROMA_SERVER_HTTP_PORT=8000
+    command: chroma run --path /chroma/chroma --host 0.0.0.0 --port 8000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Qdrant 向量数据库（备选）
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: mem0-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ./qdrant_data:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__HTTP_PORT=6333
+      - QDRANT__SERVICE__GRPC_PORT=6334
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Neo4j 图数据库
+  neo4j:
+    image: neo4j:5.15-community
+    container_name: mem0-neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - ./neo4j_data:/data
+      - ./neo4j_logs:/logs
+    environment:
+      - NEO4J_AUTH=neo4j/mem0password
+      - NEO4J_PLUGINS=["apoc"]
+      - NEO4J_dbms_security_procedures_allowlist=apoc.*
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7474"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Ollama 嵌入服务（本地 LLM）
+  ollama:
+    image: ollama/ollama:latest
+    container_name: mem0-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+    command: ollama serve
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis（缓存和会话存储）
+  redis:
+    image: redis:7-alpine
+    container_name: mem0-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  chroma_data:
+  qdrant_data:
+  neo4j_data:
+  neo4j_logs:
+  ollama_data:
+  redis_data:

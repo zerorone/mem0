@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "mem0-glm": {
+      "command": "/opt/miniconda3/envs/memos_py311/bin/python",
+      "args": [
+        "/Users/xiao/Documents/BaiduNetSyncDownload/ToolCode/mem0/mcp_server/server.py"
+      ],
+      "env": {
+        "PYTHONPATH": "/Users/xiao/Documents/BaiduNetSyncDownload/ToolCode/mem0"
+      }
+    }
+  }
+}

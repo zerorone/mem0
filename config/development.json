@@ -1,0 +1,21 @@
+{
+  "glm_api_key": "91654c7966f149dc94f4bdcba1d90fa3.BGlbzom7iMDHyjhS",
+  "glm_base_url": "https://open.bigmodel.cn/api/paas/v4",
+  "glm_model": "glm-4.5",
+  "enable_thinking": true,
+  
+  "vector_store_provider": "chroma",
+  "vector_store_config": {
+    "collection_name": "mem0_memories",
+    "host": "localhost",
+    "port": 8000
+  },
+  
+  "embedding_provider": "ollama",
+  "embedding_config": {
+    "model": "bge-m3"
+  },
+  
+  "log_level": "INFO",
+  "enhanced_logging": false
+}
