@@ -66,17 +66,20 @@ class FalkorDB:
     def _initialize_graph(self):
         """初始化图数据库结构，创建向量索引"""
         try:
+            # 获取嵌入模型的维度
+            embedding_dims = getattr(self.config.embedder.config, 'embedding_dims', 1024)
+            
             # 创建节点向量索引
             create_index_query = f"""
             CALL db.idx.vector.createNodeIndex(
                 'Entity', 
                 'embedding', 
-                1024, 
+                {embedding_dims}, 
                 'COSINE'
             )
             """
             self.graph.query(create_index_query)
-            logger.info("FalkorDB 向量索引创建成功")
+            logger.info(f"FalkorDB 向量索引创建成功 (维度: {embedding_dims})")
             
         except Exception as e:
             # 索引可能已存在，忽略错误
