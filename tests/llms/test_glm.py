@@ -83,11 +83,12 @@ def test_reasoning_model_detection():
     config = GLMConfig(api_key="test_key")
     llm = GLMLLM(config)
     
-    # GLM-4.5 supports reasoning
-    assert llm._is_reasoning_model("glm-4.5") == True
+    # Only specific GLM models need parameter filtering
+    assert llm._is_reasoning_model("glm-4.5-pro") == True
     assert llm._is_reasoning_model("glm-4-plus") == True
     
-    # Other models don't support reasoning
+    # Regular GLM models support thinking but keep normal parameters
+    assert llm._is_reasoning_model("glm-4.5") == False
     assert llm._is_reasoning_model("glm-4.5-flash") == False
     assert llm._is_reasoning_model("glm-4") == False
 

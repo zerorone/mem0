@@ -96,14 +96,15 @@ class GLMLLM(LLMBase):
     def _is_reasoning_model(self, model: str) -> bool:
         """
         检查是否为支持深度思考的推理模型
+        注意：GLM 模型支持深度思考但仍支持常规参数
 
         Args:
             model: 模型名称
 
         Returns:
-            bool: 是否支持深度思考
+            bool: 是否支持深度思考（但不影响参数过滤）
         """
-        reasoning_models = {"glm-4.5", "glm-4-plus", "glm-4.5-pro"}
+        reasoning_models = {"glm-4.5-pro", "glm-4-plus"}  # 只有特定模型需要参数过滤
         return model.lower() in reasoning_models
 
     def _validate_config(self):
@@ -157,10 +158,11 @@ class GLMLLM(LLMBase):
         if response_format:
             params["response_format"] = response_format
 
-        # 添加深度思考参数（如果模型支持）
+        # 添加深度思考参数（如果启用且模型支持）
+        thinking_supported_models = {"glm-4.5", "glm-4-plus", "glm-4.5-pro"}
         if (hasattr(self.config, 'enable_thinking') 
             and self.config.enable_thinking 
-            and self._is_reasoning_model(self.config.model)):
+            and self.config.model.lower() in thinking_supported_models):
             params["thinking"] = {"type": "enabled"}
 
         # 发送请求到 GLM API
