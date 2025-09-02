@@ -31,6 +31,7 @@ try:
     from mem0.llms.configs import LlmConfig
     from mem0.embeddings.configs import EmbedderConfig
     from mem0.vector_stores.configs import VectorStoreConfig
+    from mem0.graphs.configs import GraphStoreConfig
 except ImportError as e:
     print(f"❌ Mem0 模块导入失败: {e}")
     sys.exit(1)
@@ -146,11 +147,20 @@ class Mem0GLMServer:
                 config=self.config_manager.config.get("embedding_config", {})
             )
             
+            # 创建图数据库配置（可选）
+            graph_store_config = None
+            if self.config_manager.config.get("graph_store_provider"):
+                graph_store_config = GraphStoreConfig(
+                    provider=self.config_manager.config["graph_store_provider"],
+                    config=self.config_manager.config.get("graph_store_config", {})
+                )
+            
             # 创建完整的 MemoryConfig 对象
             memory_config = MemoryConfig(
                 llm=llm_config,
                 vector_store=vector_store_config,
                 embedder=embedder_config,
+                graph_store=graph_store_config if graph_store_config else GraphStoreConfig(),
                 version="v1.1"
             )
             

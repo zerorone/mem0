@@ -205,6 +205,7 @@ class GraphStoreFactory:
         "memgraph": "mem0.memory.memgraph_memory.MemoryGraph",
         "neptune": "mem0.graphs.neptune.main.MemoryGraph",
         "kuzu": "mem0.memory.kuzu_memory.MemoryGraph",
+        "falkordb": "mem0.graphs.falkordb.main.FalkorDB",
         "default": "mem0.memory.graph_memory.MemoryGraph",
     }
 

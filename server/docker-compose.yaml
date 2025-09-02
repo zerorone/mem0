@@ -18,7 +18,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      neo4j:
+      memgraph:
         condition: service_healthy
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload  # Enable auto-reload
     environment:
@@ -43,30 +43,30 @@ services:
         - postgres_db:/var/lib/postgresql/data
       ports:
         - "8432:5432"
-  neo4j:
-    image: neo4j:5.26.4
+  memgraph:
+    image: memgraph/memgraph:latest
     networks:
       - mem0_network
     healthcheck:
-      test: wget http://localhost:7687 || exit 1
-      interval: 1s
-      timeout: 10s
-      retries: 20
-      start_period: 90s
+      test: ["CMD", "mg_client", "-h", "localhost", "-p", "7687", "-u", "memgraph", "-P", "mem0graph", "--execute", "RETURN 1;"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     ports:
-      - "8474:7474" # HTTP
-      - "8687:7687" # Bolt
+      - "8474:3000"  # Memgraph Lab Web UI
+      - "8687:7687"  # Bolt protocol
     volumes:
-      - neo4j_data:/data
+      - memgraph_data:/var/lib/memgraph
+      - memgraph_logs:/var/log/memgraph
     environment:
-      - NEO4J_AUTH=neo4j/mem0graph
-      - NEO4J_PLUGINS=["apoc"]  # Add this line to install APOC
-      - NEO4J_apoc_export_file_enabled=true
-      - NEO4J_apoc_import_file_enabled=true
-      - NEO4J_apoc_import_file_use__neo4j__config=true
+      - MEMGRAPH_USER=memgraph
+      - MEMGRAPH_PASSWORD=mem0graph
+    command: ["--log-level=INFO", "--bolt-port=7687", "--bolt-address=0.0.0.0"]
 
 volumes:
-  neo4j_data:
+  memgraph_data:
+  memgraph_logs:
   postgres_db:
 
 networks:

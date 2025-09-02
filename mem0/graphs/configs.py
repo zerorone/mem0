@@ -75,12 +75,26 @@ class KuzuConfig(BaseModel):
     db: Optional[str] = Field(":memory:", description="Path to a Kuzu database file")
 
 
+class FalkorDBConfig(BaseModel):
+    host: Optional[str] = Field("localhost", description="Host address for FalkorDB")
+    port: Optional[int] = Field(6379, description="Port for FalkorDB")
+    graph_name: Optional[str] = Field("knowledge_graph", description="Name of the graph in FalkorDB")
+    decode_responses: Optional[bool] = Field(True, description="Whether to decode Redis responses")
+    
+    @model_validator(mode="before")
+    def check_connection_params(cls, values):
+        host, port = values.get("host"), values.get("port")
+        if not host or not port:
+            raise ValueError("Please provide 'host' and 'port' for FalkorDB connection.")
+        return values
+
+
 class GraphStoreConfig(BaseModel):
     provider: str = Field(
-        description="Provider of the data store (e.g., 'neo4j', 'memgraph', 'neptune', 'kuzu')",
+        description="Provider of the data store (e.g., 'neo4j', 'memgraph', 'neptune', 'kuzu', 'falkordb')",
         default="neo4j",
     )
-    config: Union[Neo4jConfig, MemgraphConfig, NeptuneConfig, KuzuConfig] = Field(
+    config: Union[Neo4jConfig, MemgraphConfig, NeptuneConfig, KuzuConfig, FalkorDBConfig] = Field(
         description="Configuration for the specific data store", default=None
     )
     llm: Optional[LlmConfig] = Field(description="LLM configuration for querying the graph store", default=None)
@@ -99,5 +113,7 @@ class GraphStoreConfig(BaseModel):
             return NeptuneConfig(**v.model_dump())
         elif provider == "kuzu":
             return KuzuConfig(**v.model_dump())
+        elif provider == "falkordb":
+            return FalkorDBConfig(**v.model_dump())
         else:
             raise ValueError(f"Unsupported graph store provider: {provider}")
