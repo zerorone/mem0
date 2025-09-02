@@ -6,6 +6,7 @@ from mem0.configs.llms.anthropic import AnthropicConfig
 from mem0.configs.llms.azure import AzureOpenAIConfig
 from mem0.configs.llms.base import BaseLlmConfig
 from mem0.configs.llms.deepseek import DeepSeekConfig
+from mem0.configs.llms.glm import GLMConfig
 from mem0.configs.llms.lmstudio import LMStudioConfig
 from mem0.configs.llms.ollama import OllamaConfig
 from mem0.configs.llms.openai import OpenAIConfig
@@ -44,6 +45,7 @@ class LlmFactory:
         "lmstudio": ("mem0.llms.lmstudio.LMStudioLLM", LMStudioConfig),
         "vllm": ("mem0.llms.vllm.VllmLLM", VllmConfig),
         "langchain": ("mem0.llms.langchain.LangchainLLM", BaseLlmConfig),
+        "glm": ("mem0.llms.glm.GLMLLM", GLMConfig),
     }
 
     @classmethod
