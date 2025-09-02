@@ -186,3 +186,14 @@ eval/
 qdrant_storage/
 .crossnote
 testing.ipynb
+
+# Database directories
+neo4j_data/
+neo4j_logs/
+memgraph_data/
+memgraph_logs/
+memgraph_init/
+falkordb_data/
+falkordb_logs/
+ollama_data/
+chroma_data/
